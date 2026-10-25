@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ncdc_year_temp.py
 # MRJob to extract (Year, Temperature) pairs from NCDC fixed-width records.

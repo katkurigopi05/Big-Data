@@ -7,15 +7,23 @@ class salarymax(MRJob):
 
     def mapper(self, _, line):
         # Convert each line into a dictionary
-        row = dict(zip(cols, [ a.strip() for a in csv.reader([line]).next()]))
+        parsed = next(csv.reader([line]), [])
+        if not parsed:
+            return
+        row = dict(zip(cols, [ a.strip() for a in parsed ]))
+        if row.get('AnnualSalary') in (None, '', 'AnnualSalary'):
+            return
 
         # Yield the salary
-        yield 'salary', (float(row['AnnualSalary'][1:]), line)
+        try:
+            yield 'salary', (float(row['AnnualSalary'][1:]), line)
+        except ValueError:
+            pass
         
         # Yield the gross pay
         try:
             yield 'gross', (float(row['GrossPay'][1:]), line)
-        except ValueError:
+        except (ValueError, KeyError):
             self.increment_counter('warn', 'missing gross', 1)
 
     def reducer(self, key, values):

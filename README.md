@@ -94,6 +94,7 @@ Big-Data/
 | [`top_salary.py`](code/top_salary.py) | **Top-N Pattern with Combiner**: Computes the top 10 annual salaries and gross pays in parallel using an in-mapper/combiner top-10 heap reduction pattern and custom warning counters. |
 | [`secondarySort.py`](code/secondarySort.py) | **Secondary Sorting in MRJob**: Sorts composite `(Year, Temperature)` values in descending order per year and extracts the annual maximum temperature. |
 | [`secondary_sort_map.py`](code/secondary_sort_map.py) & [`secondary_sort_reduce.py`](code/secondary_sort_reduce.py) | **Hadoop Streaming Secondary Sort**: Native `stdin`/`stdout` Python mapper and reducer with Hadoop stderr counter reporting (`reporter:counter:Temperature,Missing,1`). |
+| [`max_temperature_map.py`](code/max_temperature_map.py) & [`max_temperature_reduce.py`](code/max_temperature_reduce.py) | **Homework 1 Q1 (Hadoop Streaming)**: Python streaming equivalents of Java Examples 2-3, 2-4, and 2-5 for finding annual maximum temperatures. |
 | [`word_count.py`](code/word_count.py) | Classic distributed word frequency counter built with `MRJob`. |
 
 ### 2. Apache Spark (`PySpark`)
@@ -104,12 +105,23 @@ Big-Data/
 | [`Glom.py`](code/Glom.py) | Demonstrates RDD partition boundaries in memory using Spark's `glom().collect()` transformation. |
 | [`CatSpark.py`](code/CatSpark.py) | Reads unstructured HDFS text files via `SparkSession` DataFrame API. |
 
-### 3. Java MapReduce
+### 3. Java MapReduce, HDFS I/O & Custom Pig/Hive UDFs
 | File | Description & Key Concepts |
 | :--- | :--- |
-| [`MaxTemperature.java`](code/MaxTemperature.java) | Job driver configuring `FileInputFormat`, `FileOutputFormat`, `Text` keys, and `IntWritable` values. |
-| [`MaxTemperatureMapper.java`](code/MaxTemperatureMapper.java) | Parses NCDC fixed-width lines, validates quality regex `[01459]`, and emits `(Year, Temp)` pairs. |
-| [`MaxTemperatureReducer.java`](code/MaxTemperatureReducer.java) | Iterates over `Iterable<IntWritable>` values per year to emit the maximum recorded temperature. |
+| [`MaxTemperature.java`](code/MaxTemperature.java), [`MaxTemperatureMapper.java`](code/MaxTemperatureMapper.java), [`MaxTemperatureReducer.java`](code/MaxTemperatureReducer.java) | Job driver, mapper, and reducer configuring `FileInputFormat`, `FileOutputFormat`, `Text` keys, and `IntWritable` values to compute annual max temperature. |
+| [`URLCat.java`](code/URLCat.java) & [`FileSystemDoubleCat.java`](code/FileSystemDoubleCat.java) | **Homework 1 Q2 (HDFS Java API)**: Reads HDFS files via `FsUrlStreamHandlerFactory` and `FSDataInputStream.seek(0)` to stream file contents twice. |
+| [`MapFileWriteDemo.java`](code/MapFileWriteDemo.java) | **Homework 1 Q3 (Hadoop I/O)**: Writes sorted `(IntWritable, Text)` key-value pairs into an indexed Hadoop `MapFile` (`data` + `index`). |
+| [`CutLoadFunc.java`](code/CutLoadFunc.java) & [`Range.java`](code/Range.java) | **Homework 2 Q3 (Custom Pig `LoadFunc` UDF)**: Parses fixed-width NCDC column byte ranges (`16-19,88-92,93-93`) directly into typed Pig `Tuple` fields. |
+| [`Trim.java`](code/Trim.java) | **Custom Pig `EvalFunc` UDF**: Trims leading and trailing whitespace from `CHARARRAY` tuples with `getArgToFuncMapping()` schema enforcement. |
+| [`Strip.java`](code/Strip.java) | **Custom Hive `UDF`**: Overloaded `evaluate()` methods backed by Apache Commons `StringUtils.strip` for HiveQL string cleansing. |
+
+### 4. Apache Pig & Apache Hive Scripts
+| File | Description & Key Concepts |
+| :--- | :--- |
+| [`project_min_max_temp.pig`](code/project_min_max_temp.pig) | **Course Project Stage 2**: Pig Latin script that loads `GKoutput.txt` and computes annual `MAX` and `MIN` temperatures ordered by year (`1930–1939`). |
+| [`project_avg_temp.hql`](code/project_avg_temp.hql) | **Course Project Stage 3**: HiveQL script creating database `GKweather`, external table `GK_year_temp`, and view `GKyear_avg_temp` (`ROUND(AVG(temp), 2)`). |
+| [`hw2_schemas_validation.pig`](code/hw2_schemas_validation.pig) | **Homework 2 Q2**: Five Pig Latin workflows demonstrating typed schemas, untyped `bytearray` schemas, corrupt record `NULL` filtering, and `SPLIT`. |
+| [`hw2_max_temp.hql`](code/hw2_max_temp.hql) | **Homework 2 Q4**: HiveQL script initializing `records_tbl`, loading `sample_1.txt`, and querying annual maximum temperatures with quality filtering. |
 
 ---
 
@@ -129,6 +141,7 @@ Big-Data/
 ## 📚 Assignments, Documentation & Lecture Modules
 
 ### Assignments & Reports (`assignments/`)
+- **Complete Verified Solutions Guide**: [`SOLUTIONS.md`](assignments/SOLUTIONS.md) — Step-by-step code, Hadoop/Pig/Hive/Spark CLI commands, and verified outputs for the Course Project, Homework 1, and Homework 2.
 - **Homework 1**: [`HomeworkAssignment1.docx`](assignments/HomeworkAssignment1.docx) / [`.pdf`](assignments/HomeworkAssignment1.pdf) & Solution Report [`RN7945BDAf-1.docx`](assignments/RN7945BDAf-1.docx) — Rewriting Java MapReduce examples in Python using Hadoop Streaming and MRJob.
 - **Homework 2**: [`HomeworkAssignment2-1.docx`](assignments/HomeworkAssignment2-1.docx) & Solution Report [`RN7945HW2BD-1.pdf`](assignments/RN7945HW2BD-1.pdf) ([`annotated`](assignments/annotated-RN7945HW2BD-1.pdf)) — Filtering and counting `-10°C` observations in 1930 across NCDC stations.
 - **Course Project**: [`CourseProject-1.docx`](assignments/CourseProject-1.docx), Extracted Output [`GKoutput.txt`](assignments/GKoutput.txt) (`130,421` records), & Execution Report [`RN7945BDFCMDS.pdf`](assignments/RN7945BDFCMDS.pdf).

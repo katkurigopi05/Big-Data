@@ -8,7 +8,12 @@ cols = 'Name,JobTitle,AgencyID,Agency,HireDate,AnnualSalary,GrossPay'.split(',')
 class salaryavg(MRJob):
 
     def avgmapper(self, _, line):
-        row = dict(zip(cols, [ a.strip() for a in csv.reader([line]).next()]))
+        parsed = next(csv.reader([line]), [])
+        if not parsed:
+            return
+        row = dict(zip(cols, [ a.strip() for a in parsed ]))
+        if row.get('AnnualSalary') in (None, '', 'AnnualSalary'):
+            return
 
         self.increment_counter('depts', row['Agency'], 1)
 
@@ -24,7 +29,7 @@ class salaryavg(MRJob):
 
         if c > 3:
             self.increment_counter('stats', 'below3', 1)
-            yield key, (s/c, c)
+            yield key, (s // c, c)
 
     def ttmapper(self, key, value):
         yield None, (value[0], key) # group by all, keep average and job title
