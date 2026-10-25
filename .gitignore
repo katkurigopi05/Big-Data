@@ -1,0 +1,17 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Sensitive Account Credentials
+lectures/HadoopAccountsForStudents.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.env
+.venv
+env/
+venv/
+
